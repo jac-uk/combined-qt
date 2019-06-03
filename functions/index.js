@@ -23,7 +23,7 @@ const createRecord = async (record, collection) => {
   return true;
 }
 
-exports.scenarioStart = functions.https.onRequest((request, response) => {
+exports.startScenario = functions.https.onRequest((request, response) => {
   return createRecord(request.body, "startScenario")
     .then(() => {
       return response.status(200).send({status: 'OK'});
