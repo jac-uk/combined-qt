@@ -5,17 +5,20 @@ const firestore = admin.firestore();
 const NotifyClient = require("notifications-node-client").NotifyClient;
 
 const createRecord = async (record, collection) => {
-  console.info({ collection: "received" });
+  console.info({ creatingRecord: collection, email: record.email });
 
   record.createdAt = new Date();
   await firestore
     .collection(collection)
     .doc()
     .set(record);
+
+  console.info({ createdRecord: collection, email: record.email });
   return true;
 }
 
 const sendEmail = async (email) => {
+  console.info({ sendingEmail: email });
   const client = new NotifyClient(functions.config().notify.key);
 
   await client
@@ -24,7 +27,7 @@ const sendEmail = async (email) => {
       email,
       {});
 
-  console.info({ emailSentTo: email });
+  console.info({ sentEmail: email });
   return true;
 }
 
