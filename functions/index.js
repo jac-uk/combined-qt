@@ -6,15 +6,6 @@ const firestore = admin.firestore();
 const createRecord = async (record, collection) => {
   console.info({ collection: "received" });
 
-  const titleFormat = /^(.+)\s*:\s*([^:]+)$/;
-  testDetails = record.title.match(titleFormat);
-  if (testDetails === null) {
-    throw new Error("Title is incorrectly formatted " + record.title);
-  } else {
-    record.testName = testDetails[1];
-    record.testPhase = testDetails[2];
-  }
-
   record.createdAt = new Date();
   await firestore
     .collection(collection)
