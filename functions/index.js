@@ -17,7 +17,7 @@ const createRecord = async (record, collection) => {
   return true;
 }
 
-const sendEmail = async (email) => {
+const sendEmail = async (email, personalisation) => {
   console.info({ sendingEmail: email });
   const client = new NotifyClient(functions.config().notify.key);
 
@@ -25,7 +25,7 @@ const sendEmail = async (email) => {
     .sendEmail(
       functions.config().notify.templates.deputy_district_judge_civil,
       email,
-      {});
+      {personalisation});
 
   console.info({ sentEmail: email });
   return true;
@@ -45,7 +45,7 @@ exports.startScenario = functions.https.onRequest((request, response) => {
 exports.finishScenario = functions.https.onRequest((request, response) => {
   return createRecord(request.body, "finishScenario")
     .then(() => {
-      return sendEmail(request.body.email);
+      return sendEmail(request.body.email, request.body.notifyPersonalisation);
     })
     .then(() => {
       return response.status(200).send({status: 'OK'});
