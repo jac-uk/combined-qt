@@ -2,37 +2,25 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 const firestore = admin.firestore();
-const NotifyClient = require("notifications-node-client").NotifyClient;
+const NotifyClient = require('notifications-node-client').NotifyClient;
 
-const createRecord = async (record, collection) => {
-  console.info({ creatingRecord: collection, email: record.email });
+const sendEmail = async (record) => {
+  if (record.simpleKey !== functions.config().simple.key) {
+    console.warn('Attempted unauthorised use');
+    return false;
+  } else {
+    console.info({ sendingEmail: record.email });
 
-  record.createdAt = new Date();
-  await firestore
-    .collection(collection)
-    .doc()
-    .set(record);
+    const client = new NotifyClient(functions.config().notify.key);
+    await client.sendEmail(record.template, record.email, {});
 
-  console.info({ createdRecord: collection, email: record.email });
-  return true;
+    console.info({ sentEmail: record.email });
+    return true;
+  }
 }
 
-const sendEmail = async (email, personalisation) => {
-  console.info({ sendingEmail: email });
-  const client = new NotifyClient(functions.config().notify.key);
-
-  await client
-    .sendEmail(
-      functions.config().notify.templates.deputy_district_judge_civil,
-      email,
-      {personalisation});
-
-  console.info({ sentEmail: email });
-  return true;
-}
-
-exports.startScenario = functions.https.onRequest((request, response) => {
-  return createRecord(request.body, "startScenario")
+exports.sendEmail = functions.https.onRequest((request, response) => {
+  return sendEmail(request.body, "startScenario")
     .then(() => {
       return response.status(200).send({status: 'OK'});
     })
@@ -42,16 +30,3 @@ exports.startScenario = functions.https.onRequest((request, response) => {
     });
 });
 
-exports.finishScenario = functions.https.onRequest((request, response) => {
-  return createRecord(request.body, "finishScenario")
-    .then(() => {
-      return sendEmail(request.body.email, request.body.notifyPersonalisation);
-    })
-    .then(() => {
-      return response.status(200).send({status: 'OK'});
-    })
-    .catch((e) => {
-      console.error(e);
-      return response.status(500).send({status: 'Error'});
-    });
-});
