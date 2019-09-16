@@ -37,36 +37,61 @@ exports.sendEmail = functions.https.onRequest(async (request, response) => {
   return response.status(200).send({status: 'OK'})
 });
 
-const writeTiming = async (data) => {
-	console.log({data});
-  // await firestore.collection('submissions').doc(data.email).set(data, { merge: true });
-  return true;
-};
+const updateCount = async (exercise, phase) => {
+  const numShards = 10;
+  const shardId = Math.floor(Math.random() * numShards).toString();
+  const count = admin.firestore.FieldValue.increment(1);
+  await firestore
+    .collection('counters')
+    .doc(`${exercise}${phase}${shardId}`)
+    .set({ count, exercise, phase })
+  return
+}
 
 exports.updateTimings = functions.firestore.document('submissions/{submissionId}').onCreate(async (snap, context) => {
 	const submission = await snap.data();
-	const email = submission.email;
+  const email = submission.email.toLowerCase();
 	const exercise = submission.exercise;
   const phase = submission.phase;
-  const phaseCountKey = `${phase}Count`;
+  const phaseSubmissionsKey = `${phase}Submissions`;
+  const phaseDurationKey = `${phase}Duration`;
 	const timing = {
 		email,
-		exercise,
+    exercise,
 	};
-	timing[phase] =  submission.submittedAt;
-  timing[phaseCountKey] = increment;
+	timing[phase] = admin.firestore.FieldValue.arrayUnion(submission.submittedAt);
+  timing[phaseSubmissionsKey] = admin.firestore.FieldValue.arrayUnion(context.params.submissionId);
+  console.info(JSON.stringify({ updateTimings: email, phase }));
 
-  const timingDoc = await firestore.collection('timings').doc(email).get();
+  const timingRef = await firestore
+    .collection('timings')
+    .where('email', '=', email)
+    .where('exercise', '=', exercise)
+    .limit(1)
 
-  if (timingDoc.exists) {
-    const existingData = timingDoc.data();
-    // They've already submitted this once.
-    if (existingData[phaseCountKey] !== undefined) {
-      await firestore.collection('timings').doc(email).set({ [phaseCountKey]: increment }, { merge: true });
-      return
-    }
+  const snapshot = await timingRef.get();
+
+  if (snapshot.empty) {
+    await firestore.collection('timings').doc().set(timing);
   } else {
-    await firestore.collection('timings').doc(email).set(timing, { merge: true });
+    snapshot.forEach(async (doc) => {
+      const data = doc.data();
+      const situationalJudgementStart = data.situationalJudgementStart || [];
+      const criticalAnalysisStart = data.criticalAnalysisStart || [];
+
+      // Calculate timings.
+      if (submission.submittedAt && situationalJudgementStart.length > 0 && phase === 'situationalJudgementFinish') {
+        timing[phaseDurationKey] = Math.ceil((submission.submittedAt.toDate() - situationalJudgementStart[0].toDate()) / 60000);
+      }
+      if (submission.submittedAt && criticalAnalysisStart.length > 0 && phase === 'criticalAnalysisFinish') {
+        timing[phaseDurationKey] = Math.ceil((submission.submittedAt.toDate() - criticalAnalysisStart[0].toDate()) / 60000);
+      }
+      await doc.ref.set(timing, { merge: true });
+    });
   }
-	return true
+
+  // NOTE: it counts duplicate submissions.
+  await updateCount(exercise, phase);
+  return true;
 });
+
