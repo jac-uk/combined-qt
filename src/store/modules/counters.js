@@ -4,7 +4,7 @@ import { firestoreAction } from "vuexfire";
 export default {
   namespaced: true,
   actions: {
-    bind: firestoreAction(async (context, details) => {
+    bind: firestoreAction(async context => {
       const ref = db.collection("counters").where("exercise", "=", "recorder2019");
       await context.bindFirestoreRef("counters", ref);
     }),
