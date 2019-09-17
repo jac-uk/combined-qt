@@ -1,4 +1,29 @@
-# QT Handler
+# qt-handler
 
-Repository for maintaining the cloud functions that handle sending email via GOV.UK Notify and optionally persisting submissions
-to firestore.
+## Project setup
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Run your tests
+```
+npm run test
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
