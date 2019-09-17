@@ -53,6 +53,7 @@ export default {
     }
   },
   state: {
-    counters: []
+    counters: [],
+    expected: 988
   }
 };
