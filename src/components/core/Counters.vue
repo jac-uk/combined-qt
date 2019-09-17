@@ -21,7 +21,6 @@
             <v-chip pill x-large color="green">
               <v-icon>mdi-account-clock</v-icon>&nbsp;
               {{ situationalJudgementFinish }}
-              </v-icon>
             </v-chip>
           </v-card-text>
         </v-card>
@@ -33,7 +32,6 @@
             <v-chip pill x-large color="indigo">
               <v-icon>mdi-account-clock</v-icon>&nbsp;
               {{ criticalAnalysisStart }}
-              </v-icon>
             </v-chip>
           </v-card-text>
         </v-card>
@@ -45,7 +43,6 @@
             <v-chip pill x-large color="orange">
               <v-icon>mdi-account-clock</v-icon>&nbsp;
               {{ criticalAnalysisFinish }}
-              </v-icon>
             </v-chip>
           </v-card-text>
         </v-card>
