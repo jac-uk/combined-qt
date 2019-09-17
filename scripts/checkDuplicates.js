@@ -13,7 +13,8 @@ const serviceAccount = require('../serviceAccountKey.json');
 admin.initializeApp({credential: admin.credential.cert(serviceAccount)});
 const firestore = admin.firestore();
 
-
+// NOTE: Firestore query limits mean that this will only get duplicates in the first 1,000 records it reads. This is fine for my
+// puropose as the count is only meant to be indicative.
 const checkDuplicates = async () => {
   const snapshot = await firestore
     .collection('timings')
