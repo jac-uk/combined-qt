@@ -44,7 +44,7 @@ const updateCount = async (exercise, phase) => {
   await firestore
     .collection('counters')
     .doc(`${exercise}${phase}${shardId}`)
-    .set({ count, exercise, phase })
+    .set({ count, exercise, phase }, { merge: true })
   return
 }
 
