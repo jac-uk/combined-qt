@@ -4,7 +4,7 @@
       <v-flex mx-auto>
         <v-card>
           <v-card-title>
-            Situational Judgement Starts
+            SJ Starts
           </v-card-title>
           <v-card-text>
             <v-chip pill x-large color="primary" class="ma-2">
@@ -15,7 +15,7 @@
         </v-card>
         <v-card>
           <v-card-title>
-            Situational Judgement Finishes
+            SJ Finishes
           </v-card-title>
           <v-card-text>
             <v-chip pill x-large color="green">
@@ -27,7 +27,7 @@
         </v-card>
         <v-card>
           <v-card-title>
-            Critical Analysis Starts
+            CA Starts
           </v-card-title>
           <v-card-text>
             <v-chip pill x-large color="indigo">
@@ -39,7 +39,7 @@
         </v-card>
         <v-card>
           <v-card-title>
-            Critical Analysis Finishes
+            CA Finishes
           </v-card-title>
           <v-card-text>
             <v-chip pill x-large color="orange">
