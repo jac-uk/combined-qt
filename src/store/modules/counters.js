@@ -5,7 +5,7 @@ export default {
   namespaced: true,
   actions: {
     bind: firestoreAction(async (context, details) => {
-      const ref = db.collection("counters")
+      const ref = db.collection("counters").where("exercise", "=", "recorder2019");
       await context.bindFirestoreRef("counters", ref);
     }),
   },
