@@ -1,3 +1,9 @@
+# This repostitory is no longer maintained
+
+The code is left as an archive, but is not under active development and thus packages etc. are not up to date. 
+
+Issues and PRs won't be accepted. 
+
 # qt-handler
 
 ## Project setup
